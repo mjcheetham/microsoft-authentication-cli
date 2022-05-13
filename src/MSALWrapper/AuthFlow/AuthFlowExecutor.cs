@@ -53,7 +53,7 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
                 if (attempt == null)
                 {
                     var oopsMessage = $"Auth flow '{authFlow.GetType().Name}' returned a null AuthFlowResult.";
-                    result.Errors.Add(new BadAuthFlowImplementException(oopsMessage));
+                    result.Errors.Add(new NullTokenResultException(oopsMessage));
                     this.logger.LogDebug(oopsMessage);
                 }
                 else
