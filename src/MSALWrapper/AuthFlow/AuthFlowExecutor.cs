@@ -6,6 +6,7 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
 
     using Microsoft.Extensions.Logging;
@@ -32,8 +33,9 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
         /// <summary>
         /// Gets the auth flow result.
         /// </summary>
+        /// <param name="token">The cancellationToken.</param>
         /// <returns>The <see cref="Task"/>.</returns>
-        public async Task<AuthFlowResult> GetTokenAsync()
+        public async Task<AuthFlowResult> GetTokenAsync(CancellationToken token)
         {
             AuthFlowResult result = new AuthFlowResult(null, new List<Exception>());
 
@@ -47,7 +49,7 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
                 var authFlowName = authFlow.GetType().Name;
                 this.logger.LogDebug($"Starting {authFlowName}...");
 
-                var attempt = await authFlow.GetTokenAsync();
+                var attempt = await authFlow.GetTokenAsync(token);
                 if (attempt == null)
                 {
                     var oopsMessage = $"Auth flow '{authFlow.GetType().Name}' returned a null AuthFlowResult.";

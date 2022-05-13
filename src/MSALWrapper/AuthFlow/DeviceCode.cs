@@ -10,6 +10,7 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Client;
@@ -63,8 +64,9 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
         /// <summary>
         /// Gets the token for a resource.
         /// </summary>
+        /// <param name="token">.</param>
         /// <returns>A <see cref="Task"/> of <see cref="TokenResult"/>.</returns>
-        public async Task<AuthFlowResult> GetTokenAsync()
+        public async Task<AuthFlowResult> GetTokenAsync(CancellationToken token)
         {
             IAccount account = await this.pcaWrapper.TryToGetCachedAccountAsync(this.preferredDomain) ?? null;
 
@@ -85,7 +87,8 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
                             this.scopes,
                             account,
                             cancellationToken),
-                        this.errors)
+                        this.errors,
+                        token)
                         .ConfigureAwait(false);
                     tokenResult.SetAuthenticationType(AuthType.Silent);
 
@@ -100,10 +103,11 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
                         this.deviceCodeFlowTimeout,
                         "Get Token using Device Code",
                         (cancellationToken) => this.pcaWrapper.GetTokenDeviceCodeAsync(
-                        this.scopes,
-                        this.ShowDeviceCodeInTty,
-                        cancellationToken),
-                        this.errors)
+                            this.scopes,
+                            this.ShowDeviceCodeInTty,
+                            cancellationToken),
+                        this.errors,
+                        token)
                         .ConfigureAwait(false);
                     tokenResult.SetAuthenticationType(AuthType.DeviceCodeFlow);
 

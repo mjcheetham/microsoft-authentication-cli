@@ -10,6 +10,7 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Client;
@@ -36,7 +37,7 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
         /// <summary>
         /// The interactive auth timeout.
         /// </summary>
-        private TimeSpan interactiveAuthTimeout = TimeSpan.FromMinutes(15);
+        private TimeSpan interactiveAuthTimeout = TimeSpan.FromSeconds(5);
         #endregion
 
         /// <summary>
@@ -63,8 +64,9 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
         /// <summary>
         /// Gets the token for a resource.
         /// </summary>
+        /// <param name="token">.</param>
         /// <returns>A <see cref="Task"/> of <see cref="TokenResult"/>.</returns>
-        public async Task<AuthFlowResult> GetTokenAsync()
+        public async Task<AuthFlowResult> GetTokenAsync(CancellationToken token)
         {
             IAccount account = await this.pcaWrapper.TryToGetCachedAccountAsync(this.preferredDomain) ?? null;
 
@@ -84,7 +86,8 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
                             this.silentAuthTimeout,
                             "Get Token Silent",
                             (cancellationToken) => this.pcaWrapper.GetTokenSilentAsync(this.scopes, account, cancellationToken),
-                            this.errors)
+                            this.errors,
+                            token)
                             .ConfigureAwait(false);
                         tokenResult.SetAuthenticationType(AuthType.Silent);
 
@@ -99,9 +102,10 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
                             this.interactiveAuthTimeout,
                             "Interactive Auth",
                             (cancellationToken) => this.pcaWrapper
-                            .WithPromptHint(this.promptHint)
-                            .GetTokenInteractiveAsync(this.scopes, account, cancellationToken),
-                            this.errors)
+                                .WithPromptHint(this.promptHint)
+                                .GetTokenInteractiveAsync(this.scopes, account, cancellationToken),
+                            this.errors,
+                            token)
                             .ConfigureAwait(false);
                         tokenResult.SetAuthenticationType(AuthType.Interactive);
 
@@ -117,9 +121,10 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
                         this.interactiveAuthTimeout,
                         "Interactive Auth (with extra claims)",
                         (cancellationToken) => this.pcaWrapper
-                        .WithPromptHint(this.promptHint)
-                        .GetTokenInteractiveAsync(this.scopes, ex.Claims, cancellationToken),
-                        this.errors)
+                            .WithPromptHint(this.promptHint)
+                            .GetTokenInteractiveAsync(this.scopes, ex.Claims, cancellationToken),
+                        this.errors,
+                        token)
                         .ConfigureAwait(false);
                     tokenResult.SetAuthenticationType(AuthType.Interactive);
 
@@ -157,8 +162,8 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
                     Identity.Client.LogLevel.Verbose,
                     enablePiiLogging: false,
                     enableDefaultPlatformLogging: true)
-                    .WithHttpClientFactory(httpFactoryAdaptor)
-                    .WithRedirectUri(Constants.AadRedirectUri.ToString());
+                .WithHttpClientFactory(httpFactoryAdaptor)
+                .WithRedirectUri(Constants.AadRedirectUri.ToString());
 
             return new PCAWrapper(this.logger, clientBuilder.Build(), this.errors, tenantId, osxKeyChainSuffix);
         }

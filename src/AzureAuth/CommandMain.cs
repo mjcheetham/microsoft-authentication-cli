@@ -9,13 +9,14 @@ namespace Microsoft.Authentication.AzureAuth
     using System.Linq;
     using System.Runtime.CompilerServices;
     using System.Threading;
-
+    using System.Threading.Tasks;
     using McMaster.Extensions.CommandLineUtils;
 
     using Microsoft.Authentication.MSALWrapper;
     using Microsoft.Authentication.MSALWrapper.AuthFlow;
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Client;
+    using Microsoft.Office.Lasso;
     using Microsoft.Office.Lasso.Extensions;
     using Microsoft.Office.Lasso.Interfaces;
     using Microsoft.Office.Lasso.Telemetry;
@@ -57,6 +58,7 @@ Allowed values: [all, web, devicecode]";
         private readonly IEnv env;
         private Alias authSettings;
         private IAuthFlow authFlow;
+        private CancellationTokenSource source = new CancellationTokenSource();
 
         /// <summary>
         /// The maximum time we will wait to acquire a mutex around prompting the user.
@@ -252,6 +254,9 @@ Allowed values: [all, web, devicecode]";
         /// </returns>
         public int OnExecute()
         {
+            Console.CancelKeyPress += this.Console_CancelKeyPress;
+            AppDomain.CurrentDomain.ProcessExit += this.CurrentDomain_ProcessExit;
+
             if (!this.EvaluateOptions())
             {
                 this.eventData.Add("validargs", false);
@@ -267,7 +272,25 @@ Allowed values: [all, web, devicecode]";
             // Small bug in Lasso - Add does not accept a null IEnumerable here.
             this.eventData.Add("settings_scopes", this.authSettings.Scopes ?? new List<string>());
 
-            return this.ClearCache ? this.ClearLocalCache() : this.GetToken();
+            if (this.ClearCache)
+            {
+                return this.ClearLocalCache();
+            }
+            else
+            {
+                return this.GetToken(this.source.Token);
+            }
+        }
+
+        private void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            this.source.Cancel();
+        }
+
+        private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            this.source.Cancel();
+            e.Cancel = true;
         }
 
         private bool ValidateOptions()
@@ -312,7 +335,7 @@ Allowed values: [all, web, devicecode]";
             return 0;
         }
 
-        private int GetToken()
+        private int GetToken(CancellationToken token)
         {
             try
             {
@@ -352,7 +375,7 @@ Allowed values: [all, web, devicecode]";
 
                     try
                     {
-                        result = authFlow.GetTokenAsync().Result;
+                        result = authFlow.GetTokenAsync(token).Result;
                     }
                     finally
                     {

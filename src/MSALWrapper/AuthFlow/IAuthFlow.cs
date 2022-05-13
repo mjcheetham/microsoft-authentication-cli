@@ -3,6 +3,7 @@
 
 namespace Microsoft.Authentication.MSALWrapper.AuthFlow
 {
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -13,7 +14,8 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
         /// <summary>
         /// Gets the token for a resource.
         /// </summary>
+        /// <param name="cancellationToken">.</param>
         /// <returns>A <see cref="Task"/> of <see cref="TokenResult"/>.</returns>
-        Task<AuthFlowResult> GetTokenAsync();
+        Task<AuthFlowResult> GetTokenAsync(CancellationToken cancellationToken);
     }
 }

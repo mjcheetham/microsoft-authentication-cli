@@ -8,6 +8,7 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
 #endif
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Microsoft.Identity.Client;
@@ -61,12 +62,14 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
         /// <summary>
         /// Gets the jwt token for a resource.
         /// </summary>
+        /// <param name="token">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> of <see cref="TokenResult"/>.</returns>
-        public async Task<AuthFlowResult> GetTokenAsync()
+        public async Task<AuthFlowResult> GetTokenAsync(CancellationToken token)
         {
             IAccount account = await this.pcaWrapper.TryToGetCachedAccountAsync(this.preferredDomain)
                 ?? Identity.Client.PublicClientApplication.OperatingSystemAccount;
             this.logger.LogDebug($"Using cached account '{account.Username}'");
+            account = null;
 
             try
             {
@@ -79,7 +82,8 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
                             this.silentAuthTimeout,
                             "Get Token Silent",
                             (cancellationToken) => this.pcaWrapper.GetTokenSilentAsync(this.scopes, account, cancellationToken),
-                            this.errors)
+                            this.errors,
+                            token)
                             .ConfigureAwait(false);
                         tokenResult.SetAuthenticationType(AuthType.Silent);
 
@@ -96,7 +100,8 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
                             (cancellationToken) => this.pcaWrapper
                             .WithPromptHint(this.promptHint)
                             .GetTokenInteractiveAsync(this.scopes, account, cancellationToken),
-                            this.errors)
+                            this.errors,
+                            token)
                             .ConfigureAwait(false);
                         tokenResult.SetAuthenticationType(AuthType.Interactive);
 
@@ -114,7 +119,8 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
                         (cancellationToken) => this.pcaWrapper
                         .WithPromptHint(this.promptHint)
                         .GetTokenInteractiveAsync(this.scopes, ex.Claims, cancellationToken),
-                        this.errors)
+                        this.errors,
+                        token)
                         .ConfigureAwait(false);
                     tokenResult.SetAuthenticationType(AuthType.Interactive);
 

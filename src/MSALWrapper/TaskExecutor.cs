@@ -23,11 +23,12 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
         /// <param name="taskName">The task name.</param>
         /// <param name="getTask">A function that return the task you want to complete within the given timeout.</param>
         /// <param name="errorsList">The errors list.</param>
+        /// <param name="externalCancellationToken">The external cancellation token.</param>
         /// <returns>The <see cref="Task"/>.</returns>
-        internal static async Task<T> CompleteWithin<T>(ILogger logger, TimeSpan timeout, string taskName, Func<CancellationToken, Task<T>> getTask, IList<Exception> errorsList)
+        internal static async Task<T> CompleteWithin<T>(ILogger logger, TimeSpan timeout, string taskName, Func<CancellationToken, Task<T>> getTask, IList<Exception> errorsList, CancellationToken externalCancellationToken)
             where T : class
         {
-            CancellationTokenSource source = new CancellationTokenSource();
+            CancellationTokenSource source = CancellationTokenSource.CreateLinkedTokenSource(externalCancellationToken);
             source.CancelAfter(timeout);
             try
             {
@@ -36,7 +37,16 @@ namespace Microsoft.Authentication.MSALWrapper.AuthFlow
             }
             catch (OperationCanceledException)
             {
-                var warningMessage = $"{taskName} timed out after {timeout.TotalMinutes} minutes.";
+                string warningMessage;
+                if (externalCancellationToken.IsCancellationRequested)
+                {
+                    warningMessage = $"{taskName} cancelled by external.";
+                }
+                else
+                {
+                    warningMessage = $"{taskName} timed out after {timeout.TotalMinutes} minutes.";
+                }
+
                 logger?.LogWarning(warningMessage);
                 errorsList?.Add(new AuthenticationTimeoutException(warningMessage));
                 return null;

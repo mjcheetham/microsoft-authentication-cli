@@ -103,11 +103,11 @@ namespace Microsoft.Authentication.MSALWrapper.Test
         {
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
             var authFlowResult = new AuthFlowResult(this.tokenResult, null);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -122,11 +122,11 @@ namespace Microsoft.Authentication.MSALWrapper.Test
         {
             var authFlowResult = new AuthFlowResult();
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -144,11 +144,11 @@ namespace Microsoft.Authentication.MSALWrapper.Test
             };
             var authFlowResult = new AuthFlowResult(null, errors1);
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -166,11 +166,11 @@ namespace Microsoft.Authentication.MSALWrapper.Test
                 new BadAuthFlowImplementException(NullAuthFlowResultExceptionMessage),
             };
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync((AuthFlowResult)null);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync((AuthFlowResult)null);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -187,14 +187,14 @@ namespace Microsoft.Authentication.MSALWrapper.Test
             var authFlowResult2 = new AuthFlowResult(this.tokenResult, null);
 
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult1);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult1);
 
             var authFlow2 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow2.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult2);
+            authFlow2.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult2);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object, authFlow2.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -215,14 +215,14 @@ namespace Microsoft.Authentication.MSALWrapper.Test
             var authFlowResult2 = new AuthFlowResult(this.tokenResult, null);
 
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult1);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult1);
 
             var authFlow2 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow2.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult2);
+            authFlow2.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult2);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object, authFlow2.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -242,14 +242,14 @@ namespace Microsoft.Authentication.MSALWrapper.Test
             var authFlowResult = new AuthFlowResult();
 
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync((AuthFlowResult)null);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync((AuthFlowResult)null);
 
             var authFlow2 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow2.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult);
+            authFlow2.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object, authFlow2.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -277,14 +277,14 @@ namespace Microsoft.Authentication.MSALWrapper.Test
             var authFlowResult = new AuthFlowResult(null, errors2);
 
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync((AuthFlowResult)null);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync((AuthFlowResult)null);
 
             var authFlow2 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow2.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult);
+            authFlow2.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object, authFlow2.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -312,14 +312,14 @@ namespace Microsoft.Authentication.MSALWrapper.Test
             var authFlowResult = new AuthFlowResult(this.tokenResult, errors2);
 
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync((AuthFlowResult)null);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync((AuthFlowResult)null);
 
             var authFlow2 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow2.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult);
+            authFlow2.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object, authFlow2.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -338,17 +338,17 @@ namespace Microsoft.Authentication.MSALWrapper.Test
             var authFlowResult3 = new AuthFlowResult(this.tokenResult, null);
 
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult1);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult1);
 
             var authFlow2 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow2.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult2);
+            authFlow2.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult2);
 
             var authFlow3 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow3.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult3);
+            authFlow3.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult3);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object, authFlow2.Object, authFlow3.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -383,17 +383,17 @@ namespace Microsoft.Authentication.MSALWrapper.Test
             var authFlowResult3 = new AuthFlowResult(this.tokenResult, errors3);
 
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult1);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult1);
 
             var authFlow2 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow2.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult2);
+            authFlow2.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult2);
 
             var authFlow3 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow3.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult3);
+            authFlow3.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult3);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object, authFlow2.Object, authFlow3.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -417,17 +417,17 @@ namespace Microsoft.Authentication.MSALWrapper.Test
             var authFlowResult2 = new AuthFlowResult();
 
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult1);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult1);
 
             var authFlow2 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow2.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult2);
+            authFlow2.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult2);
 
             var authFlow3 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow3.Setup(p => p.GetTokenAsync()).ReturnsAsync((AuthFlowResult)null);
+            authFlow3.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync((AuthFlowResult)null);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object, authFlow2.Object, authFlow3.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -461,17 +461,17 @@ namespace Microsoft.Authentication.MSALWrapper.Test
             var authFlowResult2 = new AuthFlowResult(null, errors2);
 
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult1);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult1);
 
             var authFlow2 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow2.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult2);
+            authFlow2.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult2);
 
             var authFlow3 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow3.Setup(p => p.GetTokenAsync()).ReturnsAsync((AuthFlowResult)null);
+            authFlow3.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync((AuthFlowResult)null);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object, authFlow2.Object, authFlow3.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -505,17 +505,17 @@ namespace Microsoft.Authentication.MSALWrapper.Test
             var authFlowResult3 = new AuthFlowResult(null, errors3);
 
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult1);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult1);
 
             var authFlow2 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow2.Setup(p => p.GetTokenAsync()).ReturnsAsync((AuthFlowResult)null);
+            authFlow2.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync((AuthFlowResult)null);
 
             var authFlow3 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow3.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult3);
+            authFlow3.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult3);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object, authFlow2.Object, authFlow3.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -550,17 +550,17 @@ namespace Microsoft.Authentication.MSALWrapper.Test
             var authFlowResult3 = new AuthFlowResult(this.tokenResult, errors3);
 
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult1);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult1);
 
             var authFlow2 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow2.Setup(p => p.GetTokenAsync()).ReturnsAsync((AuthFlowResult)null);
+            authFlow2.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync((AuthFlowResult)null);
 
             var authFlow3 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow3.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult3);
+            authFlow3.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult3);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object, authFlow2.Object, authFlow3.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -595,17 +595,17 @@ namespace Microsoft.Authentication.MSALWrapper.Test
             var authFlowResult2 = new AuthFlowResult(this.tokenResult, errors2);
 
             var authFlow1 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow1.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult1);
+            authFlow1.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult1);
 
             var authFlow2 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow2.Setup(p => p.GetTokenAsync()).ReturnsAsync(authFlowResult2);
+            authFlow2.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync(authFlowResult2);
 
             var authFlow3 = new Mock<IAuthFlow>(MockBehavior.Strict);
-            authFlow3.Setup(p => p.GetTokenAsync()).ReturnsAsync((AuthFlowResult)null);
+            authFlow3.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync((AuthFlowResult)null);
 
             // Act
             var authFlow = this.Subject(new[] { authFlow1.Object, authFlow2.Object, authFlow3.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             authFlow1.VerifyAll();
@@ -621,7 +621,7 @@ namespace Microsoft.Authentication.MSALWrapper.Test
         {
             // Setup
             var badAuthflow = new Mock<IAuthFlow>(MockBehavior.Strict);
-            badAuthflow.Setup(p => p.GetTokenAsync()).ReturnsAsync((AuthFlowResult)null);
+            badAuthflow.Setup(p => p.GetTokenAsync(It.IsAny<CancellationToken>())).ReturnsAsync((AuthFlowResult)null);
 
             var errors = new[]
             {
@@ -630,7 +630,7 @@ namespace Microsoft.Authentication.MSALWrapper.Test
 
             // Act
             var authFlow = this.Subject(new[] { badAuthflow.Object });
-            var result = await authFlow.GetTokenAsync();
+            var result = await authFlow.GetTokenAsync(CancellationToken.None);
 
             // Assert
             badAuthflow.VerifyAll();
