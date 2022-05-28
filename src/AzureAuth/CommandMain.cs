@@ -55,6 +55,7 @@ Allowed values: [all, web, devicecode]";
         private readonly ILogger<CommandMain> logger;
         private readonly IFileSystem fileSystem;
         private readonly IEnv env;
+        private readonly ITelemetryService telemetryService;
         private Alias authSettings;
         private IAuthFlow authFlow;
 
@@ -70,12 +71,13 @@ Allowed values: [all, web, devicecode]";
         /// <param name="logger">The logger.</param>
         /// <param name="fileSystem">The file system.</param>
         /// <param name="env">The environment interface.</param>
-        public CommandMain(CommandExecuteEventData eventData, ILogger<CommandMain> logger, IFileSystem fileSystem, IEnv env)
+        public CommandMain(CommandExecuteEventData eventData, ILogger<CommandMain> logger, IFileSystem fileSystem, IEnv env, ITelemetryService telemetryService)
         {
             this.eventData = eventData;
             this.logger = logger;
             this.fileSystem = fileSystem;
             this.env = env;
+            this.telemetryService = telemetryService;
         }
 
         /// <summary>
@@ -86,8 +88,8 @@ Allowed values: [all, web, devicecode]";
         /// <param name="fileSystem">The file system.</param>
         /// <param name="env">The environment interface.</param>
         /// <param name="authFlow">An injected <see cref="IAuthFlow"/> (defined for testability).</param>
-        public CommandMain(CommandExecuteEventData eventData, ILogger<CommandMain> logger, IFileSystem fileSystem, IEnv env, IAuthFlow authFlow)
-            : this(eventData, logger, fileSystem, env)
+        public CommandMain(CommandExecuteEventData eventData, ILogger<CommandMain> logger, IFileSystem fileSystem, IEnv env, ITelemetryService telemetryService, IAuthFlow authFlow)
+            : this(eventData, logger, fileSystem, env, telemetryService)
         {
             this.authFlow = authFlow;
         }
@@ -266,6 +268,14 @@ Allowed values: [all, web, devicecode]";
 
             // Small bug in Lasso - Add does not accept a null IEnumerable here.
             this.eventData.Add("settings_scopes", this.authSettings.Scopes ?? new List<string>());
+
+            this.telemetryService.SendException("interesting_exception", new Exception("something bad happened"));
+            if (this.CombinedAuthMode.IsBroker())
+            {
+                var brokerData = new EventData();
+                brokerData.Add("correlationId", Guid.NewGuid().ToString());
+                this.telemetryService.SendEvent("broker_auth", brokerData);
+            }
 
             return this.ClearCache ? this.ClearLocalCache() : this.GetToken();
         }
